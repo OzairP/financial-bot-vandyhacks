@@ -15,6 +15,9 @@ app = Flask(__name__)
 #     }
 # }
 
+Bot = Bot()
+
+
 @app.route("/queries/run_features", methods=['GET', 'POST'])
 def run_features():
     data = request.get_json()

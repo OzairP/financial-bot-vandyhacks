@@ -7,7 +7,7 @@ import requests
 import geocoder
 import datetime
 from backend.EnvironmentConfigurations import CAPITAL_ONE_API_KEY
-from backend.UsefulFunctions import great_circle_distance, get_address, ErrorMessages
+from backend.Useful import great_circle_distance, get_address, ErrorMessages
 
 
 def get_balance(user_id):

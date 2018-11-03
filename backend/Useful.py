@@ -2,6 +2,9 @@ from math import radians, cos, sin, asin, sqrt
 from enum import Enum
 
 
+keywords = {"balance", "atm", "branch", "withdraw", "deposit", "purchase", "transfer", "yes", "loan", "make", "yes"}
+
+
 class ErrorMessages(Enum):
     UNKNOWN_ERROR = "I are really sorry :( There was an unknown error."
     API_KEY_ERROR = "Oops. Seems like you're not our customer. You can always sign up!"
