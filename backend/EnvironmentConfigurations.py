@@ -1,0 +1,1 @@
+CAPITAL_ONE_API_KEY = "d3647dccce6ddbbb8366ddbc5f747710" # Should be a command line input eventually
