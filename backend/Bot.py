@@ -67,13 +67,13 @@ class Bot:
             self.__new_conversation()
             self.__temporary_aux = None
             return deposit_hist()
-        elif "purchase" in parsed_query:
-            self.__new_conversation()
-            self.__temporary_aux = None
-            if "make" in parsed_query:
-                return make_purchase()
-            else:
-                return purchase_hist()
+        # elif "purchase" in parsed_query:
+        #     self.__new_conversation()
+        #     self.__temporary_aux = None
+        #     if "make" in parsed_query:
+        #         return make_purchase()
+        #     else:
+        #         return purchase_hist()
         # Need to figure out a good way to pass parameters conversation_count through server
         elif "transfer" in parsed_query:
             if self.__conversation_count == 1:  # who do we transfer to
@@ -91,26 +91,26 @@ class Bot:
                 self.__new_conversation()
                 self.__temporary_aux = None
                 if "yes" in parsed_query:
-                    return transfer(self.__temporary_aux[0], self.__temporary_aux[1])
+                    return transfer(user_id, self.__temporary_aux[0], self.__temporary_aux[1])
                 else:
                     return Bot.talk({"message": "Transfer is Canceled"})
-        elif "loan" in parsed_query:
-            if self.__conversation_count == 1:  # what amount
-                self.__conversation_increment()
-                return Bot.talk("What amount would you like to be loaned?", "loan, account_number")
-            if self.__conversation_count == 2:  # confirm?
-                self.__temporary_aux.append(words[len(words) - 1])  # contains account number for the loan
-                self.__conversation_increment()
-                return Bot.talk("What amount would you like to be loaned?", "loan, amount of loan")
-            if self.__conversation_count == 3:
-                self.__temporary_aux.append(float(words[len(words) - 1]))  # contains amount of loan
-                return Bot.talk("Are you sure you want this loan?", "loan, yes/no")
-            if self.__conversation_count == 4:
-                self.__new_conversation()
-                self.__temporary_aux = None
-                if "yes" in parsed_query:
-                    return loan(self.__temporary_aux[0], self.__temporary_aux[0])
-                else:
-                    return Bot.talk("Canceled loan.")
+        # elif "loan" in parsed_query:
+        #     if self.__conversation_count == 1:  # what amount
+        #         self.__conversation_increment()
+        #         return Bot.talk("What amount would you like to be loaned?", "loan, account_number")
+        #     if self.__conversation_count == 2:  # confirm?
+        #         self.__temporary_aux.append(words[len(words) - 1])  # contains account number for the loan
+        #         self.__conversation_increment()
+        #         return Bot.talk("What amount would you like to be loaned?", "loan, amount of loan")
+        #     if self.__conversation_count == 3:
+        #         self.__temporary_aux.append(float(words[len(words) - 1]))  # contains amount of loan
+        #         return Bot.talk("Are you sure you want this loan?", "loan, yes/no")
+        #     if self.__conversation_count == 4:
+        #         self.__new_conversation()
+        #         self.__temporary_aux = None
+        #         if "yes" in parsed_query:
+        #             return loan(self.__temporary_aux[0], self.__temporary_aux[0])
+        #         else:
+        #             return Bot.talk("Canceled loan.")
 
 

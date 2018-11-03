@@ -123,10 +123,39 @@ def branch_find():
     else:  # some other failures
         return {'message': ErrorMessages.UNKNOWN_ERROR}
 
+# def make_purchase():
+#
+#
 
-def transfer(account_id, amount):
-    return
 
-
-def loan(account_id, amount):
-    return
+def transfer(user_id ,payee_id, amount):
+    r = requests.get(f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+    r = requests.post(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/transfers?key=d3647dccce6ddbbb8366ddbc5f747710",
+                      data={
+                          "medium": "balance",
+                          "payee_id": payee_id,
+                          "amount": amount
+                      })
+    status = r.status_code
+    if status == 201:
+        message = \
+            {
+                "message": f"Your money will be transferred to account # {payee_id} within an hour!.",
+                "rich_content": {
+                    "card_type": "transfer",
+                    "arguments": {
+                        "payee_id": payee_id,
+                        "payer_id": r.json()['payer_id'],
+                        "amount": amount,
+                        "status": r.json()['status']
+                    }
+                }
+            }
+        return message
+    elif status == 401:  # Invalid api key
+        return {'message': ErrorMessages.API_KEY_ERROR}
+    else:  # some other failures
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
+#
+# def loan(account_id, amount):
+#     return
