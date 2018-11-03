@@ -44,7 +44,20 @@ class bot():
                     if i == "yes":
                         transfer()
                     else:
+                        talk("Canceled Transfer.")
                         return;
             elif i == "loan":
+                if conv == 1: #what amount
+                    talk("What amount would you like to be loaned?: ")
+                    parse(nextQuery,conv)
+                if conv == 2: #confirm?
+                    talk("Are you sure you want this loan?")
+                    parse(nextQuery,conv)
+                if conv == 3:
+                    if i == "yes":
+                        loan()
+                    else:
+                        talk("Canceled Transfer.")
+                        return;
 
 
