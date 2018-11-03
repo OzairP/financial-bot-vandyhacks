@@ -17,9 +17,9 @@ app = Flask(__name__)
 
 @app.route("/queries/run_features", methods=['GET', 'POST'])
 def run_features():
-    query = request.get_json()
-    result = Bot.hear(query)
-    return jsonify(result)
+    data = request.get_json()
+    response = Bot.hear(data["user_id"], data["query"])
+    return jsonify(response)
 
 
 if __name__ == "__main__":
