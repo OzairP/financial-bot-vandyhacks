@@ -55,11 +55,11 @@ def get_balance(user_id):
 
 def atm_find():
     my_loc = geocoder.ip('me').latlng
-    r = requests.get(f"http://api.reimaginebanking.com/atm?lat={my_loc[0]}&lng={my_loc[1]}&rad=1&key={CAPITAL_ONE_API_KEY}")
+    r = requests.get(f"http://api.reimaginebanking.com/atm?lat={my_loc[0]}&lng={my_loc[1]}&rad=5&key={CAPITAL_ONE_API_KEY}")
     status = r.status_code
     if status == 200:
         if not r.json()["data"]:
-            return {"messsage": "Sorry, there are no Capital One ATMs near you :("}
+            return {"messsage": f"Sorry, there are no Capital One ATMs within 5 miles :("}
         else:
             message = \
                 {
@@ -122,3 +122,11 @@ def branch_find():
         return {'message': ErrorMessages.API_KEY_ERROR}
     else:  # some other failures
         return {'message': ErrorMessages.UNKNOWN_ERROR}
+
+
+def transfer(account_id, amount):
+    return
+
+
+def loan(account_id, amount):
+    return
