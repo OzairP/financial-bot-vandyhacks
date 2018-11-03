@@ -1,3 +1,5 @@
+import MLFeatures from backend      #These import
+import nonMLFeatures from backend   #statements need to be fixed
 class bot():
     @staticmethod
     def talk(say):
@@ -45,7 +47,7 @@ class bot():
                         transfer()
                     else:
                         talk("Canceled Transfer.")
-                        return;
+                        return "Ok Cancel"
             elif i == "loan":
                 if conv == 1: #what amount
                     talk("What amount would you like to be loaned?: ")
@@ -57,7 +59,7 @@ class bot():
                     if i == "yes":
                         loan()
                     else:
-                        talk("Canceled Transfer.")
-                        return;
+                        talk("Canceled loan.")
+                        return "Ok Cancel"
 
 
