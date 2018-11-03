@@ -21,12 +21,12 @@ def get_balance(user_id):
         return {'message': r.json()['message']}
 
 
-def withdraw(user_id, money):
+def make_withdraw(user_id, money):
     r = requests.post(f"http://api.reimaginebanking.com/accounts/{user_id}/withdrawals?key={CAPITAL_ONE_API_KEY}", json.dumps(money))
     status = r.status_code
 
 
-def deposit(user_id, money):
+def make_deposit(user_id, money):
     r = requests.post(f"http://api.reimaginebanking.com/accounts/{user_id}/deposits?key={CAPITAL_ONE_API_KEY}", json.dumps(money))
     status = r.status_code
 

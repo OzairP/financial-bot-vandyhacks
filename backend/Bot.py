@@ -1,38 +1,42 @@
-import MLFeatures from backend      #These import
-import nonMLFeatures from backend   #statements need to be fixed
-class bot():
+from backend.MLFeatures import *
+from backend.nonMLFeatures import *
+
+
+class Bot:
+
     @staticmethod
     def talk(say):
-        return(say)
+        return say
+
     @staticmethod
-    def parse(query, conv):
-        conv+1;
-        query.lower()
-        decision = "Null" #something to mark no value
+    def parse(user_id, query, conv):
+        conv+1
+        query = query.lower()
+        decision = None  # something to mark no value
         words = query.split(" ")
-        for i in words:
-            if i == "balance":
-                return balance()
-            elif i == "atm":
-                return atmFind()
-            elif i == "branch":
-                return branchFind()
-            elif i == "withdraw":
-                if decision == "make" and not decision == "Null":
-                    return makeWithdraw()
+        for word in words:
+            if word == "balance":
+                return get_balance(user_id)
+            elif word == "atm":
+                return atm_find()
+            elif word == "branch":
+                return branch_find()
+            elif word == "withdraw":
+                if (decision == "make") and (decision is not None):
+                    return make_withdraw(user_id, money)
                 else:
-                    return withdrawHist()
-            elif i == "deposit":
+                    return withdraw_hist()
+            elif word == "deposit":
                 if decision == "make" and not decision == "Null":
-                    return makeDeposit()
+                    return make_deposit()
                 else:
-                    return depositHist()
-            elif i == "purchase":
+                    return deposit_hist()
+            elif word == "purchase":
                 if decision == "make" and not decision == "Null":
-                    return makePurchase()
+                    return make_purchase()
                 else:
-                    return purchaseHist()
-            elif i == "transfer":
+                    return purchase_hist()
+            elif word == "transfer":
                 if conv == 1: #who do we transfer to
                     talk("Who would you like to tansfer to?: ")
                     parse(nextQuery,conv)
@@ -43,12 +47,12 @@ class bot():
                     talk("Are you sure you want to make this transfer?")
                     parse(nextQuery,conv)
                 if conv == 4:
-                    if i == "yes":
+                    if word == "yes":
                         transfer()
                     else:
                         talk("Canceled Transfer.")
                         return "Ok Cancel"
-            elif i == "loan":
+            elif word == "loan":
                 if conv == 1: #what amount
                     talk("What amount would you like to be loaned?: ")
                     parse(nextQuery,conv)
@@ -56,7 +60,7 @@ class bot():
                     talk("Are you sure you want this loan?")
                     parse(nextQuery,conv)
                 if conv == 3:
-                    if i == "yes":
+                    if word == "yes":
                         loan()
                     else:
                         talk("Canceled loan.")
