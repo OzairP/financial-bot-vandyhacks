@@ -39,6 +39,7 @@ class Bot:
         :return: return messages that the user will see
         """
         query = query.lower()
+        print(query)
         words = query.split(" ")
         parsed_query = set()
         # Input: given a list of strings, arr. & List of strings reference
@@ -46,7 +47,7 @@ class Bot:
         for word in words:
             if word in keywords:
                 parsed_query.add(word)
-
+        print(parsed_query)
         if "balance" in parsed_query:
             self.__new_conversation()
             self.__temporary_aux = None

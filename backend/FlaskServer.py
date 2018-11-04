@@ -18,16 +18,17 @@ app = Flask(__name__)
 Bot = Bot()
 
 
-@app.route("/queries/run_features", methods=['GET', 'POST'])
+@app.route("/queries", methods=['GET', 'POST'])
 def run_features():
     data = request.get_json()
+    print(data)
     response = Bot.parse(data["user_id"], data["query"])
     return jsonify(response)
 
 
 if __name__ == "__main__":
-    app.run()
-    print("Hello World")
+    app.run(host='0.0.0.0', debug=True, threaded=True)
+
 
 
 
