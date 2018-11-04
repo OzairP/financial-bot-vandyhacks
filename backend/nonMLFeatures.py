@@ -50,11 +50,11 @@ def atm_find():
     print(status)
     if status == 200:
         if not r.json()["data"]:
-            return {"messsage": f"Sorry, there are no Capital One ATMs within 5 miles :("}
+            return {"messsage": f"I couldn't find any CapitalOne ATM's within 5 miles."}
         else:
             message = \
                 {
-                    "message": "We found some Capital One ATMs near you!",
+                    "message": "I found a CapitalOne ATM near you.",
                     "rich_content": {
                         "card_type": "atm-locations",
                         "arguments": []
@@ -96,7 +96,7 @@ def branch_find():
         # Create message
         message = \
             {
-                "message": f"Awesome! We found a Capital One branch near you {min_distance} miles away.",
+                "message": f"I found a CapitalOne branch {min_distance} miles away from you",
                 "rich_content": {
                     "card_type": "closest-branch",
                     "arguments": {
@@ -135,7 +135,7 @@ def transfer(user_id, payee_id, amount):
     if status == 201:
         message = \
             {
-                "message": f"Your money will be transferred to account # {payee_id} within an hour!.",
+                "message": f"I've put in a transfer to #{payee_id} for {amount}",
                 "rich_content": {
                     "card_type": "transfer",
                     "arguments": {

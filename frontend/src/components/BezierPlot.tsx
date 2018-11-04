@@ -54,7 +54,7 @@ export class BezierPlot extends React.Component<BezierPlotProps> {
 		}
 
 		const y_max = Math.max(...output.map(([, y]) => y))
-		const y_scale = this.canvas.current!.height / (y_max * 2)
+		const y_scale = this.canvas.current!.height / (y_max * 2 + 100)
 
 		const x_max = Math.max(...output.map(([x]) => x))
 		const x_scale = width / (x_max * 2)
@@ -70,11 +70,18 @@ export class BezierPlot extends React.Component<BezierPlotProps> {
 		const canvas = this.canvas.current
 		const ctx = this.ctx
 
+		// Create gradient
+		const fillGrad = ctx.createLinearGradient(150.000, 0.000, 150.000, 300.000);
+
+		// Add colors
+		fillGrad.addColorStop(0.000, 'rgba(52, 152, 219,0.25)');
+		fillGrad.addColorStop(1.000, 'rgba(52, 152, 219,0.00)');
+
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
 		ctx.beginPath()
 		ctx.lineWidth = 2
-		ctx.fillStyle = this.props.stroke || COLORS['blue-dark']
-		ctx.strokeStyle = this.props.stroke || COLORS['blue-light']
+		ctx.fillStyle = fillGrad
+		ctx.strokeStyle = this.props.stroke || 'rgba(52, 152, 219,1.0)'
 
 		const curve = this.getCurve(canvas.width, this.props.x, this.props.y)
 

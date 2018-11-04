@@ -30,7 +30,8 @@ export class WithdrawalHistory extends React.Component<WithdrawalHistoryProps, W
 
 	public componentDidMount () {
 		let [x, y] = splitEntriesToAxes(Object.entries(mergeLikeKeys(this.props.data.transaction_date || this.props.data.purchase_date, this.props.data.amount)))
-		x = x.map((_, i) => i)
+		x = x.map((_, i) => i).slice(0, 14)
+		y = y.slice(0, 14)
 		this.setState({x, y})
 	}
 
