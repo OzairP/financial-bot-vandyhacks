@@ -49,7 +49,7 @@ def atm_find():
         status = r.status_code
         if status == 200:
             if not r.json()["data"]:
-                return {"message": f"Sorry, there are no Capital One ATMs within 5 miles :("}
+                return {"message": f"Sorry, I could not find any Capital One ATMs within 5 miles"}
             else:
                 message = \
                     {
@@ -97,7 +97,7 @@ def branch_find():
             # Create message
             message = \
                 {
-                    "message": f"Awesome! We found a Capital One branch near you {min_distance} miles away.",
+                    "message": f"I found a Capital One branch near you {min_distance} miles away.",
                     "rich_content": {
                         "card_type": "closest-branch",
                         "arguments": {
@@ -134,7 +134,7 @@ def transfer(user_id, payee_id, amount):
         if status == 201:
             message = \
                 {
-                    "message": f"Your money will be transferred to account # {payee_id} within an hour!.",
+                    "message": f"Your money will be transferred to account #{payee_id} within an hour!",
                     "rich_content": {
                         "card_type": "transfer",
                         "arguments": {
@@ -172,7 +172,7 @@ def deposit_hist(user_id):
                 info['amount'].append(record['amount'])
             message = \
                 {
-                    "message": "Here are your Deposits:",
+                    "message": "Here's your recent deposit history",
                     "rich_content": {
                         "card_type": "deposit-history",
                         "arguments": {
@@ -212,7 +212,7 @@ def withdraw_hist(user_id):
                 info['amount'].append(record['amount'])
             message = \
                 {
-                    "message": "Here are your Withdrawals:",
+                    "message": "Here's your recent withdrawal history",
                     "rich_content": {
                         "card_type": "withdrawal-history",
                         "arguments": {
@@ -253,7 +253,7 @@ def purchase_hist(user_id):
 
             message = \
                 {
-                    "message": "Here are your Purchases:",
+                    "message": "Here's your recent purchase history",
                     "rich_content": {
                         "card_type": "purchase-history",
                         "arguments": {
