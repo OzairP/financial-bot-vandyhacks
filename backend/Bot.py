@@ -37,7 +37,7 @@ class Bot:
                 if word in keywords:
                     parsed_query.add(word)
             # print(parsed_query)
-            if "balance" in parsed_query:
+            if "balance" in parsed_query or "balances" in parsed_query:
                 self.__new_conversation()
                 return get_balance(user_id)
             elif "atm" in parsed_query:
@@ -46,7 +46,7 @@ class Bot:
             elif "branch" in parsed_query or "bank" in parsed_query or "store" in parsed_query: # TODO may be more keywords
                 self.__new_conversation()
                 return branch_find()
-            elif "withdraw" in parsed_query or "withdrawal" in parsed_query:
+            elif "withdraw" in parsed_query or "withdrawal" in parsed_query or "withdrawl" in parsed_query:
                 self.__new_conversation()
                 return withdraw_hist(user_id)
             elif "deposit" in parsed_query or "deposits" in parsed_query:
