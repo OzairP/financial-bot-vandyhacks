@@ -13,8 +13,9 @@ from backend.Useful import great_circle_distance, get_address, ErrorMessages
 
 def get_balance(user_id):
     # GET requests to for balance
-    r = requests.get(f"http://api.reimaginebanking.com/customers/{user_id}accounts?key={CAPITAL_ONE_API_KEY}")
+    r = requests.get(f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key={CAPITAL_ONE_API_KEY}")
     status = r.status_code
+    print(status)
     # print("HTTP RESPONSE: ", status)  # print out status code for debugging
     if status == 200:
         message = \
@@ -43,8 +44,10 @@ def get_balance(user_id):
 
 def atm_find():
     my_loc = geocoder.ip('me').latlng
-    r = requests.get(f"http://api.reimaginebanking.com/atm?lat={my_loc[0]}&lng={my_loc[1]}&rad=5&key={CAPITAL_ONE_API_KEY}")
+    print(my_loc)
+    r = requests.get(f"http://api.reimaginebanking.com/atms?lat={my_loc[0]}&lng={my_loc[1]}&rad=100&key={CAPITAL_ONE_API_KEY}")
     status = r.status_code
+    print(status)
     if status == 200:
         if not r.json()["data"]:
             return {"messsage": f"Sorry, there are no Capital One ATMs within 5 miles :("}
@@ -78,6 +81,7 @@ def branch_find():
     my_loc = geocoder.ip('me').latlng
     r = requests.get(f"http://api.reimaginebanking.com/branches?key={CAPITAL_ONE_API_KEY}")
     status = r.status_code
+    print(status)
     if status == 200:
         # find minimum distance
         min_distance = float("inf")
@@ -112,15 +116,23 @@ def branch_find():
         return {'message': ErrorMessages.UNKNOWN_ERROR}
 
 
-def transfer(user_id ,payee_id, amount):
-    r = requests.get(f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
-    r = requests.post(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/transfers?key=d3647dccce6ddbbb8366ddbc5f747710",
+def transfer(user_id, payee_id, amount):
+    r = requests.get(f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key={CAPITAL_ONE_API_KEY}")
+    if r.status_code != 200:
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
+
+    print(user_id, CAPITAL_ONE_API_KEY)
+    print(r.json())
+    print(r.status_code)
+    ### TODO seems to be failing here
+    r = requests.post(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['id']}/transfers?key={CAPITAL_ONE_API_KEY}",
                       data={
                           "medium": "balance",
                           "payee_id": payee_id,
                           "amount": amount
                       })
     status = r.status_code
+    print(status)
     if status == 201:
         message = \
             {
@@ -144,7 +156,9 @@ def transfer(user_id ,payee_id, amount):
 
 def deposit_hist(user_id):
     r = requests.get(
-        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key={CAPITAL_ONE_API_KEY}")
+    if r.status_code != 200:
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
     r = requests.get(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/deposit?key={CAPITAL_ONE_API_KEY}")
     statusC = r.status_code
 
@@ -238,7 +252,9 @@ def deposit_hist(user_id):
 
 def withdraw_hist(user_id):
     r = requests.get(
-        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key={CAPITAL_ONE_API_KEY}")
+    if r.status_code != 200:
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
     r = requests.get(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/withdrawals?key={CAPITAL_ONE_API_KEY}")
     statusC = r.status_code
 
@@ -331,7 +347,9 @@ def withdraw_hist(user_id):
 
 def payment_hist(user_id):
     r = requests.get(
-        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key={CAPITAL_ONE_API_KEY}")
+    if r.status_code != 200:
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
     r = requests.get(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/purchases?key={CAPITAL_ONE_API_KEY}")
     statusC = r.status_code
 
