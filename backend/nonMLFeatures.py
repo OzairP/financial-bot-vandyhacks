@@ -4,27 +4,41 @@ This file exclusively contains features that require no Machine Learning Capabil
 '''
 
 import requests
-import json
 import geocoder
 import datetime
 from calendar import monthrange
 from backend.EnvironmentConfigurations import CAPITAL_ONE_API_KEY
-from backend.UsefulFunctions import great_circle_distance
+from backend.Useful import great_circle_distance, get_address, ErrorMessages
 
 
 def get_balance(user_id):
     # GET requests to for balance
-    r = requests.get(f"http://api.reimaginebanking.com/accounts/{user_id}?key={CAPITAL_ONE_API_KEY}")
+    r = requests.get(f"http://api.reimaginebanking.com/customers/{user_id}accounts?key={CAPITAL_ONE_API_KEY}")
     status = r.status_code
-    print("HTTP RESPONSE: ", status)  # print out status code for debugging
+    # print("HTTP RESPONSE: ", status)  # print out status code for debugging
     if status == 200:
-        return {'message': "Your current Balance is " + r.json()['balance']}
+        message = \
+            {
+                "message": "Here is a summary of your balances of all your accounts",
+                "rich_content": {
+                    "card_type": "balance-sheet",
+                    "arguments": []
+                }
+            }
+        for account in r.json():
+            message["rich_content"]["arguments"].append(
+                {
+                    "account_name": account["nickname"],
+                    "balance": account["balance"]
+                }
+            )
+        return message
     elif status == 404:  # invalid user id
-        return {'message': "User ID not found"}
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
     elif status == 401:  # Invalid api key
-        return {'message': r.json()['message']}
-    else: # some other failures
-        return {'message': "Unknown Error Occurred"}
+        return {'message': ErrorMessages.API_KEY_ERROR}
+    else:  # some other failures
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
 
 # Can't really withdraw or deposit $ , maybe connect to a debit card or venmo? but can't really do that here
 # # TODO
@@ -42,15 +56,34 @@ def get_balance(user_id):
 
 def atm_find():
     my_loc = geocoder.ip('me').latlng
-    r = requests.get(f"http://api.reimaginebanking.com/atm?lat={my_loc[0]}&lng={my_loc[1]}&rad=1&key={CAPITAL_ONE_API_KEY}")
+    r = requests.get(f"http://api.reimaginebanking.com/atm?lat={my_loc[0]}&lng={my_loc[1]}&rad=5&key={CAPITAL_ONE_API_KEY}")
     status = r.status_code
     if status == 200:
-        for atm in r["data"]:
-            atm["address"]
-            atm["hours"]
-        return {"message": "Here are list of Capital One ATMs near you:\n"
-                           ""}
-
+        if not r.json()["data"]:
+            return {"messsage": f"Sorry, there are no Capital One ATMs within 5 miles :("}
+        else:
+            message = \
+                {
+                    "message": "We found some Capital One ATMs near you!",
+                    "rich_content": {
+                        "card_type": "atm-locations",
+                        "arguments": []
+                    }
+                }
+            for atm in r.json()["data"]:
+                message["rich_content"]["arguments"].append(
+                    {
+                        "address": get_address(atm["address"]),
+                        "hours": atm["hours"][0]
+                    }
+                )
+            return message
+    elif status == 404:  # invalid latitude, longitude pair
+        return {'message': ErrorMessages.LOCATION_ERROR}
+    elif status == 401:  # Invalid api key
+        return {'message': ErrorMessages.API_KEY_ERROR}
+    else:  # some other failures
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
 
 def branch_find():
     # uses geocode library to find my location
@@ -69,25 +102,56 @@ def branch_find():
                 min_distance = distance
                 closest_branch = branch
         # Create message
-        notes = str()
-        for note in closest_branch["notes"]:  #
-            notes = notes + ", " + note
-        address = closest_branch["address"]
-        address = address["street_number"] + " " + address["street_name"] + " " + address["city"] + " " \
-                  + address["state"] + " " + address["zip"]
-
-        message = f"The closest Capital One branch is {min_distance} miles away.\nBranch Name: " \
-                  + closest_branch["name"] + ".\nPhone: " + closest_branch["phone_number"] + "\n Address: " \
-                  + address + "\nHours Today: " \
-                  + closest_branch["hours"][(datetime.datetime.today().weekday() + 1) % 7] + f"\nNotes: {notes}"
-        del notes
-        return {"message": message}
-    elif status == 404:  # invalid user id
-        return {'message': "User ID not found"}
+        message = \
+            {
+                "message": f"Awesome! We found a Capital One branch near you {min_distance} miles away.",
+                "rich_content": {
+                    "card_type": "closest-branch",
+                    "arguments": {
+                        "distance": min_distance,
+                        "branch_name": closest_branch["name"],
+                        "phone_number": closest_branch["phone_number"],
+                        "address": get_address(closest_branch["address"]),
+                        "hours": closest_branch["hours"][(datetime.datetime.today().weekday() + 1) % 7],
+                        "notes": closest_branch["notes"]
+                    }
+                }
+            }
+        return message
     elif status == 401:  # Invalid api key
-        return {'message': r.json()['message']}
+        return {'message': ErrorMessages.API_KEY_ERROR}
     else:  # some other failures
-        return {'message': "Unknown Error Occurred"}
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
+
+
+def transfer(user_id ,payee_id, amount):
+    r = requests.get(f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+    r = requests.post(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/transfers?key=d3647dccce6ddbbb8366ddbc5f747710",
+                      data={
+                          "medium": "balance",
+                          "payee_id": payee_id,
+                          "amount": amount
+                      })
+    status = r.status_code
+    if status == 201:
+        message = \
+            {
+                "message": f"Your money will be transferred to account # {payee_id} within an hour!.",
+                "rich_content": {
+                    "card_type": "transfer",
+                    "arguments": {
+                        "payee_id": payee_id,
+                        "payer_id": r.json()['payer_id'],
+                        "amount": amount,
+                        "status": r.json()['status']
+                    }
+                }
+            }
+        return message
+    elif status == 401:  # Invalid api key
+        return {'message': ErrorMessages.API_KEY_ERROR}
+    else:  # some other failures
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
 
 def deposit_hist():
 
@@ -101,7 +165,7 @@ def deposit_hist():
     if today.day > 10: #same month same year
 
         for i in range(11):     #in theory, this should work
-            today.day = today.day - 1
+            today = today.replace(today.day - 1)
 
             if r.json()['transaction_date'] == today:
                 info.append(r.json()['transaction_date'])
@@ -114,8 +178,8 @@ def deposit_hist():
     elif today.day <= 10: #Same year, different month
 
         while today.day > 0: #go through until we get to the begining of the month
-            cnt + 1
-            today.day = today.day - 1
+            cnt = cnt + 1
+            today = today.replace(today.day - 1)
 
             if r.json()['transaction_date'] == today:
                 info.append(r.json()['transaction_date'])
@@ -128,7 +192,7 @@ def deposit_hist():
         daysLeft = 10 - cnt
 
         for i in range(daysLeft):
-            today.day = today.day - 1
+            today = today.replace(today.day - 1)
 
             if r.json()['transaction_date'] == today:
                 info.append(r.json()['transaction_date'])
@@ -140,8 +204,8 @@ def deposit_hist():
         if today.month < 2: #we go back a year
 
             while today.day > 0:  # go through until we get to the begining of the month
-                cnt + 1
-                today.day = today.day - 1
+                cnt = cnt + 1
+                today = today.replace(today.day - 1)
 
                 if r.json()['transaction_date'] == today:
                     info.append(r.json()['transaction_date'])
@@ -154,7 +218,7 @@ def deposit_hist():
 
             for i in range(daysLeft):
                 new = datetime.date((today.year - 1) , (today.month-1), daysOfLastMonth)
-                new.day = new.day - 1
+                new = new.replace(new.day - 1)
 
                 if r.json()['transaction_date'] == new:
                     info.append(r.json()['transaction_date'])
@@ -189,7 +253,7 @@ def withdraw_hist():
     if today.day > 10:  # same month same year
 
         for i in range(11):  # in theory, this should work
-            today.day = today.day - 1
+            today = today.replace(today.day - 1)
 
             if r.json()['transaction_date'] == today:
                 info.append(r.json()['transaction_date'])
@@ -202,8 +266,8 @@ def withdraw_hist():
     elif today.day <= 10:  # Same year, different month
 
         while today.day > 0:  # go through until we get to the begining of the month
-            cnt + 1
-            today.day = today.day - 1
+            cnt = cnt + 1
+            today = today.replace(today.day - 1)
 
             if r.json()['transaction_date'] == today:
                 info.append(r.json()['transaction_date'])
@@ -215,7 +279,7 @@ def withdraw_hist():
         daysLeft = 10 - cnt
 
         for i in range(daysLeft):
-            today.day = today.day - 1
+            today = today.replace(today.day - 1)
 
             if r.json()['transaction_date'] == today:
                 info.append(r.json()['transaction_date'])
@@ -227,8 +291,8 @@ def withdraw_hist():
         if today.month < 2:  # we go back a year
 
             while today.day > 0:  # go through until we get to the begining of the month
-                cnt + 1
-                today.day = today.day - 1
+                cnt = cnt + 1
+                today = today.replace(today.day - 1)
 
                 if r.json()['transaction_date'] == today:
                     info.append(r.json()['transaction_date'])
@@ -241,7 +305,7 @@ def withdraw_hist():
             daysLeft = 10 - cnt
             for i in range(daysLeft):
                 new = datetime.date((today.year - 1), (today.month - 1), daysOfLastMonth)
-                new.day = new.day - 1
+                new = new.replace(new.day - 1)
 
                 if r.json()['transaction_date'] == new:
                     info.append(r.json()['transaction_date'])
@@ -277,7 +341,7 @@ def payment_hist():
     if today.day > 10:  # same month same year
 
         for i in range(11):  # in theory, this should work
-            today.day = today.day - 1
+            today = today.replace(today.day - 1)
 
             if r.json()['purchase_date'] == today:
                 info.append(r.json()['purchase_date'])
@@ -290,8 +354,8 @@ def payment_hist():
     elif today.day <= 10:  # Same year, different month
 
         while today.day > 0:  # go through until we get to the begining of the month
-            cnt + 1
-            today.day = today.day - 1
+            cnt = cnt + 1
+            today = today.replace(today.day - 1)
 
             if r.json()['purchase_date'] == today:
                 info.append(r.json()['purchase_date'])
@@ -303,7 +367,7 @@ def payment_hist():
         daysLeft = 10 - cnt
 
         for i in range(daysLeft):
-            today.day = today.day - 1
+            today = today.replace(today.day - 1)
 
             if r.json()['purchase_date'] == today:
                 info.append(r.json()['purchase_date'])
@@ -315,8 +379,8 @@ def payment_hist():
         if today.month < 2:  # we go back a year
 
             while today.day > 0:  # go through until we get to the begining of the month
-                cnt + 1
-                today.day = today.day - 1
+                cnt = cnt + 1
+                today = today.replace(today.day - 1)
 
                 if r.json()['purchase_date'] == today:
                     info.append(r.json()['purchase_date'])
@@ -329,7 +393,7 @@ def payment_hist():
 
             for i in range(daysLeft):
                 new = datetime.date((today.year - 1), (today.month - 1), daysOfLastMonth)
-                new.day = new.day - 1
+                new = new.replace(new.day - 1)
 
                 if r.json()['purchase_date'] == new:
                     info.append(r.json()['purchase_date'])
