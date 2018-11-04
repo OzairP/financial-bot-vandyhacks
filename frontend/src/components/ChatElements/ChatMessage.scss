@@ -1,0 +1,37 @@
+@import "../../global";
+
+.cb-chat-message {
+	margin: 2.5px 0;
+	padding: 10px;
+	border-radius: 5px;
+	max-width: 75%;
+
+	@include shadow-2;
+
+	&.cb-chat-message--right {
+		margin-left: auto;
+		text-align: right;
+		border-bottom-right-radius: 0px;
+		background-color: $color--blue;
+		color: $color--dark;
+
+		& + .cb-chat-message--left {
+			margin-top: 12.5px;
+		}
+	}
+
+	&.cb-chat-message--left {
+		margin-right: auto;
+		text-align: right;
+		border-bottom-left-radius: 0;
+		background-color: $color--dark-lighter;
+
+		& + .cb-chat-message--right {
+			margin-top: 12.5px;
+		}
+	}
+
+	span {
+		word-break: break-all;
+	}
+}

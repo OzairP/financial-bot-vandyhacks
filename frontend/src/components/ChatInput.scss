@@ -1,0 +1,132 @@
+@import "../global";
+
+$action-button-size: 35px;
+
+.cb-chat-input {
+	position: relative;
+	width: 100%;
+	min-height: 40px;
+	background: $color--dark-light;
+
+	margin: 12.5px 5px;
+	border-radius: 5px;
+
+	display: flex;
+	justify-content: center;
+	align-content: center;
+	align-items: center;
+	flex-direction: row;
+
+	@include shadow-5;
+}
+
+.cb-chat-input__type {
+	flex-grow: 1;
+	background-color: transparent;
+	border: none;
+	padding: 15px;
+	color: $color--light;
+	font-size: 14px;
+
+	&::placeholder {
+		color: transparentize($color--light, 0.75);
+		font-size: 14px;
+	}
+}
+
+.cb-chat-input__action {
+	height: $action-button-size;
+	width: $action-button-size;
+	background-color: $color--dark-lighter;
+	border: none;
+	border-radius: 50%;
+
+	display: flex;
+	align-items: center;
+	margin-right: 7.5px;
+
+	@include shadow-2;
+	transition: all 250ms cubic-bezier(0.84, 0.02, 0.36, 1);
+
+	&:hover {
+		@include shadow-3;
+		transform: translateY(-1px);
+		cursor: pointer;
+	}
+
+	svg path {
+		fill: $color--blue;
+	}
+
+	&.cb-chat-input__action--flash svg {
+		animation: flash 1500ms ease-in-out infinite;
+	}
+}
+
+.cb-chat-input__transition-pair {
+	overflow: hidden;
+	position: relative;
+	height: 47px;
+	width: 47px;
+
+	& > * {
+		transition: transform 300ms cubic-bezier(0.68, -0.55, 0.27, 1.55);
+		position: absolute;
+		top: calc(50% - #{$action-button-size / 2});
+		left: calc(50% - #{$action-button-size / 2});
+	}
+
+	& > *:first-child.exited {
+		transform: translateY(-150%);
+	}
+	& > *:last-child.exited {
+		transform: translateY(150%);
+	}
+}
+
+.cb-chat-input__dictation {
+	position: absolute;
+	width: 100%;
+	bottom: 125%;
+
+	transform-origin: calc(100% - 12.5px) bottom;
+	transition: transform 300ms cubic-bezier(0.06, 0.88, 0.36, 1);
+
+	background: $color--dark-lighter;
+	border-radius: 5px;
+	@include shadow-5;
+
+	&::after {
+		$size: 10px;
+
+		content: '';
+		display: block;
+		position: absolute;
+		right: 12.5px;
+
+		border: #{$size} transparent solid;
+		border-top-color: $color--dark-lighter;
+	}
+
+	// Animation
+	&.cb-chat-input__dictation--entering,
+	&.cb-chat-input__dictation--exiting {
+		transform: scale(0);
+	}
+
+	&.cb-chat-input__dictation--entered {
+		transform: scale(1);
+	}
+}
+
+@keyframes flash {
+	0% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.25;
+	}
+	100% {
+		opacity: 1;
+	}
+}

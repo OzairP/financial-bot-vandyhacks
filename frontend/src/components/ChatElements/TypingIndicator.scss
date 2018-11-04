@@ -1,0 +1,36 @@
+@import "../../global";
+
+.cb-typing-indicator {
+	display: flex;
+	align-items: center;
+
+	& > .cb-typing-indicator__ball:nth-child(1) {
+		background-color: $color--blue-dark;
+	}
+	& > .cb-typing-indicator__ball:nth-child(2) {
+		background-color: $color--blue;
+		animation-delay: 100ms;
+	}
+	& > .cb-typing-indicator__ball:nth-child(3) {
+		background-color: $color--blue-light;
+		animation-delay: 200ms;
+	}
+}
+
+.cb-typing-indicator__ball {
+	height: 3px;
+	width: 3px;
+	background-color: white;
+	border-radius: 50%;
+	margin: 0 2px;
+	animation: up-down 500ms ease-in-out infinite;
+}
+
+@keyframes up-down {
+	25% {
+		transform: translateY(-0.5px);
+	}
+	75% {
+		transform: translateY(0.5px);
+	}
+}

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "lib": ["es2015", "esnext", "dom"],
     "target": "es5",
     "allowJs": true,
     "skipLibCheck": false,

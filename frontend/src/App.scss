@@ -1,0 +1,28 @@
+.App {
+	min-height: 100vh;
+	width: 100vw;
+	overflow: hidden;
+
+	display: flex;
+}
+
+.cb-io {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+
+	width: 100%;
+
+	& > div {
+		max-width: 400px;
+	}
+
+	.cb-chat-history {
+		flex-grow: 1;
+	}
+
+	.cb-chat-input {
+		flex-shrink: 1;
+	}
+}
