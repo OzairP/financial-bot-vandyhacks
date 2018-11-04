@@ -164,10 +164,8 @@ def deposit_hist(user_id):
     today = datetime.date.today()
     cnt = 0
     info = []
-    visited = False
 
     if today.day > 10: #same month same year
-        visited = True
 
         for i in range(11):     #in theory, this should work
             today = today.replace(today.day - 1)
@@ -179,9 +177,8 @@ def deposit_hist(user_id):
                 info.append(r.json()['amount'])
                 #check if in info.append(r.json()['description'])
 
-
-    elif today.day <= 10 and not visited: #Same year, different month
-        visited = True
+    ##might be a problem here sense we change day in loop above
+    elif today.day <= 10: #Same year, different month
 
         while today.day > 0: #go through until we get to the begining of the month
             cnt = cnt + 1
@@ -233,20 +230,27 @@ def deposit_hist(user_id):
                     info.append(r.json()['amount'])
                     # check if in info.append(r.json()['description']da12, ((today.day - 10) + daysOfLastMonth))
     else:
-        return "I really don't know what year you're in?"
+        return {"message": "I really don't know what year you're in?"}
 
     if statusC == 200:
-        return {'message': "Here is your deposits from the past 10 days:",
-                'arguments': info} #maybe find a better way to feed arguments
+        message = \
+            {
+                "message": "Here is your deposits from the past 10 days:",
+                "rich_content": {
+                    "card_type": "deposits-history",
+                    "arguments": info
+                }
+            }
+        return message #maybe find a better way to feed arguments
 
     elif statusC == 404:  # invalid user id
-        return {'message': "I'm sorry, who are you?"}
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
 
     elif statusC == 401:  # Invalid api key
-        return {'message': r.json()['message']}
+        return {'message': ErrorMessages.API_KEY_ERROR}
 
     else:  # some other failures
-        return {'message': "You've gotta be really far out there to get this one."}
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
 
 
 def withdraw_hist(user_id):
@@ -260,11 +264,9 @@ def withdraw_hist(user_id):
     today = datetime.date.today()
     cnt = 0
     info = []
-    visited = False #I use this to stop us from going into two of the same loops due to
-                    #The value of today.day being modified by one loop, which can affect the next
 
     if today.day > 10:  # same month same year
-        visited = True
+
         for i in range(11):  # in theory, this should work
             today = today.replace(today.day - 1)
 
@@ -275,8 +277,8 @@ def withdraw_hist(user_id):
                 info.append(r.json()['amount'])
                 # check if in info.append(r.json()['description'])
 
-    elif today.day <= 10 and not visited:  # Same year, different month
-        visited = True
+    ##might be a problem here sense we change day in loop above
+    elif today.day <= 10:  # Same year, different month
 
         while today.day > 0:  # go through until we get to the begining of the month
             cnt = cnt + 1
@@ -314,8 +316,8 @@ def withdraw_hist(user_id):
                     info.append(r.json()['amount'])
                     # check if in info.append(r.json()['description'])
 
-            daysOfLastMonth = monthrange(today.year, (today.month - 1))[1] #days in the month we're changing to
-            daysLeft = 10 - cnt     #how many more days we need to get
+            daysOfLastMonth = monthrange(today.year, (today.month - 1))[1]
+            daysLeft = 10 - cnt
             for i in range(daysLeft):
                 new = datetime.date((today.year - 1), (today.month - 1), daysOfLastMonth)
                 new = new.replace(new.day - 1)
@@ -328,20 +330,27 @@ def withdraw_hist(user_id):
                     # check if in info.append(r.json()['description']da12, ((today.day - 10) + daysOfLastMonth))
 
     else:
-        return "I really don't know what year you're in?"
+        return {"message": "I really don't know what year you're in?"}
 
     if statusC == 200:
-        return {'message': "Here is your withdrawals from the past 10 days:",
-                'arguments': info}  # maybe find a better way to feed arguments
+        message = \
+            {
+                "message": "Here is your withdrawals from the past 10 days:",
+                "rich_content": {
+                    "card_type": "withdrawal-history",
+                    "arguments": info
+                }
+            }
+        return message  # maybe find a better way to feed arguments
 
     elif statusC == 404:  # invalid user id
-        return {'message': "I don't know you, back up"}
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
 
     elif statusC == 401:  # Invalid api key
-        return {'message': r.json()['message']}
+        return {'message': ErrorMessages.API_KEY_ERROR}
 
     else:  # some other failures
-        return {'message': "Like I said before, don't know how you get here"}
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
 
 
 def payment_hist(user_id):
@@ -355,10 +364,8 @@ def payment_hist(user_id):
     today = datetime.date.today()
     cnt = 0
     info = []
-    visited = False
 
     if today.day > 10:  # same month same year
-        visited = True
 
         for i in range(11):  # in theory, this should work
             today = today.replace(today.day - 1)
@@ -369,9 +376,10 @@ def payment_hist(user_id):
                 info.append(r.json()['medium'])
                 info.append(r.json()['amount'])
                 # check if in info.append(r.json()['description'])
+    ##might be a problem here sense we change day in loop above
 
-    elif today.day <= 10 and not visited:  # Same year, different month
-        visited = True
+    elif today.day <= 10:  # Same year, different month
+
         while today.day > 0:  # go through until we get to the begining of the month
             cnt = cnt + 1
             today = today.replace(today.day - 1)
@@ -397,7 +405,7 @@ def payment_hist(user_id):
 
         if today.month < 2:  # we go back a year
 
-            while today.day > 0:  # go through until we get to the beginning of the month
+            while today.day > 0:  # go through until we get to the begining of the month
                 cnt = cnt + 1
                 today = today.replace(today.day - 1)
 
@@ -407,8 +415,8 @@ def payment_hist(user_id):
                     info.append(r.json()['medium'])
                     info.append(r.json()['amount'])
                     # check if in info.append(r.json()['description'])
-            daysOfLastMonth = monthrange(today.year, (today.month - 1))[1] #gives you the number of days in the month
-            daysLeft = 10 - cnt #Calculate the days left after taking away the days we've already went through
+            daysOfLastMonth = monthrange(today.year, (today.month - 1))[1]
+            daysLeft = 10 - cnt
 
             for i in range(daysLeft):
                 new = datetime.date((today.year - 1), (today.month - 1), daysOfLastMonth)
@@ -425,14 +433,21 @@ def payment_hist(user_id):
         return "I really don't know what year you're in?"
 
     if statusC == 200:
-        return {'message': "Hey man, I found your payment from the past 10 days:",
-                'arguments': info}  # maybe find a better way to feed arguments
+        message = \
+            {
+                "message": "Here is your payments from the past 10 days:",
+                "rich_content": {
+                    "card_type": "payments-history",
+                    "arguments": info
+                }
+            }
+        return message  # maybe find a better way to feed arguments
 
     elif statusC == 404:  # invalid user id
-        return {'message': "And you are? (I don't know who you are)"}
+        return {'message': ErrorMessages.NO_ACCOUNT_ERROR}
 
     elif statusC == 401:  # Invalid api key
-        return {'message': r.json()['message']}
+        return {'message': ErrorMessages.API_KEY_ERROR}
 
     else:  # some other failures
-        return {'message': "Unknown Error"}
+        return {'message': ErrorMessages.UNKNOWN_ERROR}
