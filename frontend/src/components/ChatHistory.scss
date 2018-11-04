@@ -5,8 +5,119 @@
 	background: $color--dark-light;
 	border-radius: 5px;
 	margin: 12.5px 5px;
-	display: flex;
-	justify-content: flex-end;
-	flex-direction: column;
 	padding: 15px;
+
+	display: flex;
+	align-content: stretch;
+	overflow: hidden;
+
+	position: relative;
+}
+
+.cb-chat-history__transcript {
+	display: flex;
+	flex-direction: column;
+	transition: transform 300ms cubic-bezier(0.68, -0.55, 0.27, 1.55);
+	position: absolute;
+	left: 20px;
+	right: 20px;
+	top: 100%;
+}
+
+.cb-chat-history__indicators {
+	position: absolute;
+	top: 100%;
+	left: 20px;
+	width: 100%;
+	transition: transform 300ms cubic-bezier(0.68, -0.55, 0.27, 1.55);
+
+	&.cb-chat-history__indicators--entered,
+	&.cb-chat-history__indicators--exiting {
+		transform: translateY(-100%);
+	}
+
+	&.cb-chat-history__indicators--exited,
+	&.cb-chat-history__indicators--entering {
+		transform: none;
+	}
+}
+
+.cb-chat-history__initial {
+	position: absolute;
+	top: 50px;
+	left: 20px;
+	right: 20px;
+
+	& > * {
+		transition: transform 1500ms, opacity, 1000ms cubic-bezier(0.65, 0.05, 0.36, 1);
+	}
+
+	$diff: 15ms;
+
+	h1 {
+		transition-delay: 0ms + ($diff * 0);
+	}
+
+	h2 {
+		transition-delay: 10ms + ($diff * 1);
+	}
+
+	.cb-chat-history__example:nth-child(3) {
+		transition-delay: 20ms + ($diff * 2);
+	}
+
+	.cb-chat-history__example:nth-child(4) {
+		transition-delay: 30ms + ($diff * 3);
+	}
+
+	.cb-chat-history__example:nth-child(5) {
+		transition-delay: 40ms + ($diff * 4);
+	}
+
+	.cb-chat-history__example:nth-child(6) {
+		transition-delay: 50ms + ($diff * 5);
+	}
+
+	&.cb-chat-history__initial--entering,
+	&.cb-chat-history__initial--exited {
+		& > * {
+			transform: translateY(-75vh);
+			opacity: 0;
+		}
+	}
+
+	&.cb-chat-history__initial--exiting,
+	&.cb-chat-history__initial--entered {
+		& > * {
+			transform: none;
+			opacity: 1;
+		}
+	}
+}
+
+.cb-chat-history__example {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: flex-start;
+	margin: 35px 0;
+
+	svg {
+		width: 40px;
+		height: auto;
+		margin-right: 15px;
+
+		path {
+			fill: $color--blue;
+		}
+	}
+
+	h3 {
+		margin: 5px 0;
+	}
+
+	p {
+		margin: 0;
+		color: rgba(255, 255, 255, 0.75);
+	}
 }

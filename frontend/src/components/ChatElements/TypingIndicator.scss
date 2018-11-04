@@ -1,7 +1,7 @@
 @import "../../global";
 
 .cb-typing-indicator {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
 
 	& > .cb-typing-indicator__ball:nth-child(1) {

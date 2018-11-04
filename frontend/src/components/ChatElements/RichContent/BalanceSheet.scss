@@ -1,0 +1,26 @@
+@import "../../../global";
+
+.cb-rich-balance-sheet {
+	@include chat-message;
+	position: relative;
+}
+
+.cb-rich-balance-sheet__account {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	span:first-child {
+		font-weight: bold;
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 1.1px;
+	}
+
+	span:last-child {
+		font-weight: lighter;
+		font-family: 'Roboto', sans-serif;
+		color: #2ecc71;
+		font-size: 18px;
+	}
+}

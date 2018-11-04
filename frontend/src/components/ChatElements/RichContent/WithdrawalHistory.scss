@@ -1,0 +1,10 @@
+@import "../../../global";
+
+.cb-withdrawal-graph {
+	@include chat-message;
+
+	canvas {
+		margin: -10px;
+		margin-bottom: -15px;
+	}
+}

@@ -1,8 +1,8 @@
 import * as React from 'react'
+import { RefObject } from 'react'
 import './ChatInput.scss'
 import { DictationProcessor } from './DictationProcessor'
 import Transition from 'react-transition-group/Transition'
-import { RefObject } from 'react'
 
 interface ChatInputState {
 	input: string,
@@ -10,7 +10,12 @@ interface ChatInputState {
 	dictating: boolean,
 }
 
-export class ChatInput extends React.Component<{}, ChatInputState> {
+export interface ChatInputProps {
+	onInput: (input: string) => void
+	disabled?: boolean
+}
+
+export class ChatInput extends React.Component<ChatInputProps, ChatInputState> {
 
 	public state = {
 		input: '',
@@ -47,22 +52,25 @@ export class ChatInput extends React.Component<{}, ChatInputState> {
 				}</Transition>
 
 				<input
-					ref={this.input}
-					onChange={this.onTyping.bind(this)}
 					className="cb-chat-input__type"
 					placeholder={inputPlaceholder}
-					disabled={dictating}
+					disabled={dictating || this.props.disabled}
+					ref={this.input}
+					onChange={this.onTyping.bind(this)}
+					onKeyUp={this.onKeyDown.bind(this)}
 				/>
 
 				<div className="cb-chat-input__transition-pair">
-					<button className={`cb-chat-input__action ${input.length === 0 || dictating ? '' : 'exited'} ${dictating ? 'cb-chat-input__action--flash' : ''}`}
-							onClick={this.onDictate.bind(this)}>
+					<button
+						className={`cb-chat-input__action ${input.length === 0 || dictating ? '' : 'exited'} ${dictating ? 'cb-chat-input__action--flash' : ''}`}
+						onClick={this.onDictate.bind(this)}>
 						<svg style={{width: '24px', height: '24px'}} viewBox="0 0 24 24">
 							<path
 								d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z" />
 						</svg>
 					</button>
-					<button className={`cb-chat-input__action ${input.length > 0 && !dictating ? '' : 'exited'}`}>
+					<button className={`cb-chat-input__action ${input.length > 0 && !dictating ? '' : 'exited'}`}
+							onClick={this.onSubmit.bind(this)}>
 						<svg style={{width: '24px', height: '24px'}} viewBox="0 0 24 24">
 							<path fill="#000000" d="M2,21L23,12L2,3V10L17,12L2,14V21Z" />
 						</svg>
@@ -72,14 +80,36 @@ export class ChatInput extends React.Component<{}, ChatInputState> {
 		)
 	}
 
+	private onKeyDown (event: React.KeyboardEvent<HTMLInputElement>) {
+		if (event.keyCode !== 13) {
+			return
+		}
+
+		this.onSubmit()
+	}
+
 	protected onTyping (event: React.ChangeEvent<HTMLInputElement>) {
 		const {value: input} = event.currentTarget
-		console.log(input)
 
 		this.setState({input})
 	}
 
-	protected onDictate (event: React.MouseEvent<HTMLButtonElement>) {
+	protected onSubmit () {
+		if (this.props.disabled) {
+			return
+		}
+
+		this.props.onInput(this.state.input)
+		this.setState({
+			input: ''
+		}, () => this.input.current!.value = '')
+	}
+
+	protected onDictate () {
+		if (this.props.disabled) {
+			return
+		}
+
 		if (this.state.dictating) {
 			this.setState({
 				inputPlaceholder: 'Start typing...',
@@ -112,9 +142,10 @@ export class ChatInput extends React.Component<{}, ChatInputState> {
 
 	protected onRecognitionError (e: Error | SpeechRecognitionError) {
 		if ('error' in e) {
-			if (e.error === "aborted") {
+			if (e.error === 'aborted') {
 				return
-			} if (e.error === "no-speech") {
+			}
+			if (e.error === 'no-speech') {
 				this.setState({
 					inputPlaceholder: 'No speech is being detected...',
 				})
@@ -135,5 +166,4 @@ export class ChatInput extends React.Component<{}, ChatInputState> {
 			input: s.input + result
 		}), () => this.input.current!.value = this.state.input)
 	}
-
 }

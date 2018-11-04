@@ -1,0 +1,22 @@
+@import "../../../global";
+
+.cb-branch {
+	@include chat-message;
+	display: flex;
+	flex-direction: row;
+}
+
+.cb-branch__map {
+	flex-shrink: 1;
+	margin: -10px 0 -10px -10px;
+}
+
+.cb-branch__data {
+	flex-grow: 1;
+	padding: 10px;
+}
+
+.cb-branch__name {
+	font-weight: bold;
+	font-size: 14px;
+}

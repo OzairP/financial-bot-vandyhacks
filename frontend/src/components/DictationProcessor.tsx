@@ -15,16 +15,40 @@ interface DictationProcessorProps {
 
 export class DictationProcessor extends React.Component<DictationProcessorProps> {
 
+	/**
+	 * Media stream from the microphone
+	 * @type {null}
+	 */
 	protected mediaStream: MediaStreamAudioSourceNode | null = null
 
+	/**
+	 * Canvas element
+	 * @type {React.RefObject<HTMLCanvasElement>}
+	 */
 	protected canvas: RefObject<HTMLCanvasElement> = React.createRef()
 
+	/**
+	 * Canvas context
+	 * @type {null}
+	 */
 	protected canvasCtx: CanvasRenderingContext2D | null = null
 
+	/**
+	 * Initial time
+	 * @type {number}
+	 */
 	protected t_0: number = new Date().getTime()
 
+	/**
+	 * Last amplitude recorded by microphone
+	 * @type {boolean}
+	 */
 	protected lastAmplitude: number | boolean = false
 
+	/**
+	 * Speech Recognition driver
+	 * @type {null}
+	 */
 	protected speechRecognition: SpeechRecognition | null = null
 
 	public async componentDidMount () {
@@ -82,7 +106,6 @@ export class DictationProcessor extends React.Component<DictationProcessorProps>
 			const len = buf.length
 			let rms = 0
 
-			// Iterate through buffer
 			for (let i = 0; i < len; i++) {
 				rms += Math.abs(buf[i])
 			}
@@ -118,6 +141,7 @@ export class DictationProcessor extends React.Component<DictationProcessorProps>
 				<canvas
 					ref={this.canvas}
 					className="cb-dictation-processor__canvas"
+					height="75px"
 					width="400px"
 				/>
 			</div>
@@ -130,7 +154,7 @@ export class DictationProcessor extends React.Component<DictationProcessorProps>
 
 		const fn = (x: number) =>
 			amplitude * ((midPoint - Math.abs(midPoint - x)) / (midPoint)) *
-			Math.sin(x * frequency + phaseShift) + 85
+			Math.sin(x * frequency + phaseShift) + 40
 
 		for (let i = 0; i < canvasWidth; i++) {
 			output[i] = [i, fn(i)]
