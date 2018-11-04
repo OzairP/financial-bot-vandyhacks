@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify
 from backend.Bot import Bot
-app = Flask(__name__)
-
+import traceback
 
 # data format
 # {
@@ -14,16 +13,22 @@ app = Flask(__name__)
 #           }
 #     }
 # }
+app = Flask(__name__)
 
 Bot = Bot()
 
 
-@app.route("/queries", methods=['GET', 'POST'])
+@app.route("/queries", methods=['POST'])
 def run_features():
-    data = request.get_json()
-    print(data)
-    response = Bot.parse(data["user_id"], data["query"])
-    return jsonify(response)
+    try:
+        data = request.get_json()
+        print(data)
+        response = Bot.parse(data["user_id"], data["query"])
+        print(response)
+        # print(jsonify(response))
+        return jsonify(response)
+    except:
+        return jsonify(error=404, exception=traceback.format_exc())
 
 
 if __name__ == "__main__":
