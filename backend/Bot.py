@@ -1,7 +1,7 @@
 from backend.MLFeatures import *
 from backend.nonMLFeatures import *
 from backend.Useful import keywords
-
+import re
 
 class Bot:
     """
@@ -39,6 +39,7 @@ class Bot:
         :return: return messages that the user will see
         """
         query = query.lower()
+        query = ''.join([i for i in query if i.isalpha() or i == ' ' or ('0' <= i <= '9')])
         print(query)
         words = query.split(" ")
         parsed_query = set()
@@ -56,7 +57,7 @@ class Bot:
             self.__new_conversation()
             self.__temporary_aux = None
             return atm_find()
-        elif "branch" in parsed_query:
+        elif "branch" in parsed_query: # TODO may be more keywords
             self.__new_conversation()
             self.__temporary_aux = None
             return branch_find()
@@ -79,20 +80,26 @@ class Bot:
         elif "transfer" in parsed_query:
             if self.__conversation_count == 1:  # who do we transfer to
                 self.__conversation_increment()
+                print(user_id)
                 return Bot.talk("Who would you like to transfer to?", "transfer, account_number")
             if self.__conversation_count == 2:  # what amount
                 self.__conversation_increment()
                 self.__temporary_aux.append(words[len(words)-1])  # contains account number info
+                print(user_id)
                 return Bot.talk("What amount would you like to transfer to ?", "transfer, amount of transfer")
             if self.__conversation_count == 3:  # confirm?
                 self.__conversation_increment()
                 self.__temporary_aux.append(float(words[len(words) - 1]))  # contains amount of transfer
+                print(user_id)
                 return Bot.talk("Are you sure you want to make this transfer?", "transfer, yes/no")
             if self.__conversation_count == 4:
                 self.__new_conversation()
+                payee_id = self.__temporary_aux[0]
+                amount = self.__temporary_aux[1]
                 self.__temporary_aux = None
                 if "yes" in parsed_query:
-                    return transfer(user_id, self.__temporary_aux[0], self.__temporary_aux[1])
+                    print(user_id)
+                    return transfer(user_id, payee_id, amount)
                 else:
                     return Bot.talk({"message": "Transfer is Canceled"})
         # elif "loan" in parsed_query:
