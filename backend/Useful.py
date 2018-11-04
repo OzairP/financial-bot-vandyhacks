@@ -2,8 +2,9 @@ from math import radians, cos, sin, asin, sqrt
 from enum import Enum
 
 
-keywords = {"balance", "atm", "branch", "withdraw", "withdrawal", "deposit", "deposits", "purchase", "transfer",
-            "loan", "make", "bank", "store", "purchases", "payment", "payments", "yes", "yeah", "no", "nope"}
+keywords = {"balance", "balances", "atm", "branch", "bank", "store", "withdraw", "withdrawal", "withdrawl", "withdrawls", "deposit", "deposits",
+            "transfer", "loan", "make", "purchase", "purchases", "payment", "payments", "yes", "yeah",
+            "no", "nope"}
 
 
 class ErrorMessages(Enum):
