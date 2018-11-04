@@ -124,7 +124,6 @@ def transfer(user_id, payee_id, amount):
     print(user_id, CAPITAL_ONE_API_KEY)
     print(r.json())
     print(r.status_code)
-    ### TODO seems to be failing here
     r = requests.post(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['id']}/transfers?key={CAPITAL_ONE_API_KEY}",
                       data={
                           "medium": "balance",
