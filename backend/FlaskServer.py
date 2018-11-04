@@ -21,7 +21,7 @@ Bot = Bot()
 @app.route("/queries/run_features", methods=['GET', 'POST'])
 def run_features():
     data = request.get_json()
-    response = Bot.parse(data["user_id"], data["query"], )
+    response = Bot.parse(data["user_id"], data["query"])
     return jsonify(response)
 
 

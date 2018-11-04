@@ -40,19 +40,6 @@ def get_balance(user_id):
     else:  # some other failures
         return {'message': ErrorMessages.UNKNOWN_ERROR}
 
-# Can't really withdraw or deposit $ , maybe connect to a debit card or venmo? but can't really do that here
-# # TODO
-# def make_withdraw(user_id, money):
-#     r = requests.post(f"http://api.reimaginebanking.com/accounts/{user_id}/withdrawals?key={CAPITAL_ONE_API_KEY}", json.dumps(??))
-#     status = r.status_code
-#
-#
-# # TODO
-# def make_deposit(user_id, money):
-#
-#     r = requests.post(f"http://api.reimaginebanking.com/accounts/{user_id}/deposits?key={CAPITAL_ONE_API_KEY}", json.dumps(??))
-#     status = r.status_code
-
 
 def atm_find():
     my_loc = geocoder.ip('me').latlng
@@ -84,6 +71,7 @@ def atm_find():
         return {'message': ErrorMessages.API_KEY_ERROR}
     else:  # some other failures
         return {'message': ErrorMessages.UNKNOWN_ERROR}
+
 
 def branch_find():
     # uses geocode library to find my location
@@ -153,9 +141,11 @@ def transfer(user_id ,payee_id, amount):
     else:  # some other failures
         return {'message': ErrorMessages.UNKNOWN_ERROR}
 
-def deposit_hist():
 
-    r = requests.get(f"http://api.reimaginebanking.com/accounts/{user_id}/deposit?key={CAPITAL_ONE_API_KEY}")
+def deposit_hist(user_id):
+    r = requests.get(
+        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+    r = requests.get(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/deposit?key={CAPITAL_ONE_API_KEY}")
     statusC = r.status_code
 
     today = datetime.date.today()
@@ -242,8 +232,11 @@ def deposit_hist():
     else:  # some other failures
         return {'message': "Unknown Error Occurred"}
 
-def withdraw_hist():
-    r = requests.get(f"http://api.reimaginebanking.com/accounts/{user_id}/withdrawals?key={CAPITAL_ONE_API_KEY}")
+
+def withdraw_hist(user_id):
+    r = requests.get(
+        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+    r = requests.get(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/withdrawals?key={CAPITAL_ONE_API_KEY}")
     statusC = r.status_code
 
     today = datetime.date.today()
@@ -330,8 +323,11 @@ def withdraw_hist():
     else:  # some other failures
         return {'message': "Unknown Error Occurred"}
 
-def payment_hist():
-    r = requests.get(f"http://api.reimaginebanking.com/accounts/{user_id}/purchases?key={CAPITAL_ONE_API_KEY}")
+
+def payment_hist(user_id):
+    r = requests.get(
+        f"http://api.reimaginebanking.com/customers/{user_id}/accounts?key=d3647dccce6ddbbb8366ddbc5f747710")
+    r = requests.get(f"http://api.reimaginebanking.com/accounts/{r.json()[0]['_id']}/purchases?key={CAPITAL_ONE_API_KEY}")
     statusC = r.status_code
 
     today = datetime.date.today()

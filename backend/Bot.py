@@ -10,7 +10,7 @@ class Bot:
     # Singleton Pattern
     def __init__(self):
         self.__conversation_count = 1
-        self.__temporary_aux = [] # any temporary variable to hold
+        self.__temporary_aux = []  # any temporary variable to hold
 
     @property
     def conversation_count(self):
@@ -32,7 +32,7 @@ class Bot:
                 "suffix": suffix
             }
 
-    def parse(self, user_id, query, extra):
+    def parse(self, user_id, query):
         """
         :param user_id: user_id for the current user sending requests
         :param query: String for query = user input
@@ -62,11 +62,11 @@ class Bot:
         elif "withdraw" in parsed_query:
             self.__new_conversation()
             self.__temporary_aux = None
-            return withdraw_hist()
+            return withdraw_hist(user_id)
         elif "deposit" in parsed_query:
             self.__new_conversation()
             self.__temporary_aux = None
-            return deposit_hist()
+            return deposit_hist(user_id)
         # elif "purchase" in parsed_query:
         #     self.__new_conversation()
         #     self.__temporary_aux = None
@@ -112,5 +112,3 @@ class Bot:
         #             return loan(self.__temporary_aux[0], self.__temporary_aux[0])
         #         else:
         #             return Bot.talk("Canceled loan.")
-
-
