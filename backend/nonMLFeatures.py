@@ -430,7 +430,7 @@ def payment_hist(user_id):
                     # check if in info.append(r.json()['description']da12, ((today.day - 10) + daysOfLastMonth))
 
     else:
-        return "I really don't know what year you're in?"
+        return {"message": I really don't know what year you're in?"}
 
     if statusC == 200:
         message = \
