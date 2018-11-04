@@ -1,0 +1,12 @@
+@import "../global";
+
+.cb-chat-history {
+	width: 100%;
+	background: $color--dark-light;
+	border-radius: 5px;
+	margin: 12.5px 5px;
+	display: flex;
+	justify-content: flex-end;
+	flex-direction: column;
+	padding: 15px;
+}
